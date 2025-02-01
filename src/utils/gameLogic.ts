@@ -393,6 +393,11 @@ const isKing = (pieceType: PieceType): boolean => {
   return pieceType === '王将' || pieceType === '玉将';
 };
 
+interface Square {
+  position: Position;
+  piece: Piece | null;
+}
+
 export const movePiece = (
   gameState: GameState,
   from: Position,
@@ -443,14 +448,17 @@ export const movePiece = (
 
   // 駒の移動（ディープコピーを作成）
   const movedPiece = { ...piece };
-  newGameState.board[to.y][to.x] = {
-    position: { x: to.x, y: to.y },
-    piece: movedPiece
-  };
-  newGameState.board[from.y][from.x] = {
+  const fromSquare: Square = {
     position: { x: from.x, y: from.y },
     piece: null
   };
+  const toSquare: Square = {
+    position: { x: to.x, y: to.y },
+    piece: movedPiece
+  };
+
+  newGameState.board[to.y][to.x] = toSquare;
+  newGameState.board[from.y][from.x] = fromSquare;
 
   // プレイヤーの交代
   newGameState.currentPlayer = newGameState.currentPlayer === '先手' ? '後手' : '先手';
