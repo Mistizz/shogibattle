@@ -120,8 +120,7 @@ const canMoveTo = (
   piece: Piece
 ): boolean => {
   // 移動先に自分の駒がある場合は移動不可
-  const targetPiece = gameState.board[to.y][to.x].piece;
-  if (targetPiece && targetPiece.player === piece.player) {
+  if (gameState.board[to.y][to.x].piece?.player === piece.player) {
     return false;
   }
 
@@ -425,7 +424,7 @@ export const movePiece = (
     }
 
     const capturedPieces = newGameState.capturedPieces[piece.player];
-    const existingPiece = capturedPieces.find((p) => p.type === capturedType);
+    const existingPiece = capturedPieces.find((p: { type: PieceType }) => p.type === capturedType);
     if (existingPiece) {
       existingPiece.count++;
     } else {
@@ -443,7 +442,7 @@ export const movePiece = (
   }
 
   // 駒の移動
-  newGameState.board[to.y][to.x].piece = { ...piece };
+  newGameState.board[to.y][to.x].piece = piece;
   newGameState.board[from.y][from.x].piece = null;
 
   // プレイヤーの交代
@@ -519,11 +518,11 @@ export const dropPiece = (
     return gameState;
   }
 
-  const newGameState = JSON.parse(JSON.stringify(gameState));
+  const newGameState = JSON.parse(JSON.stringify(gameState)) as GameState;
   
   // 持ち駒から1枚減らす
   const capturedPieces = newGameState.capturedPieces[player];
-  const pieceIndex = capturedPieces.findIndex(p => p.type === pieceType);
+  const pieceIndex = capturedPieces.findIndex((p: { type: PieceType }) => p.type === pieceType);
   if (pieceIndex === -1 || capturedPieces[pieceIndex].count === 0) {
     return gameState;
   }
