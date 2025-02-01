@@ -1,4 +1,4 @@
-import { GameState, Piece, Position, PieceType, Player, CapturedPiece, PromotionMap } from '../types/shogi';
+import { GameState, Piece, Position, PieceType, Player, CapturedPiece, PromotionMap, Square } from '../types/shogi';
 
 type PieceMovement = {
   x: number;
@@ -120,7 +120,8 @@ const canMoveTo = (
   piece: Piece
 ): boolean => {
   // 移動先に自分の駒がある場合は移動不可
-  if (gameState.board[to.y][to.x].piece?.player === piece.player) {
+  const destPiece = gameState.board[to.y][to.x].piece;
+  if (destPiece?.player === piece.player) {
     return false;
   }
 
@@ -405,26 +406,25 @@ export const movePiece = (
   const newGameState = JSON.parse(JSON.stringify(gameState)) as GameState;
   const piece = newGameState.board[from.y][from.x].piece;
   if (!piece) return gameState;
-  
-  const targetPiece = newGameState.board[to.y][to.x].piece;
 
   // 駒を取る場合の処理
-  if (targetPiece) {
+  const destPiece = newGameState.board[to.y][to.x].piece;
+  if (destPiece) {
     // 王将/玉将を取った場合は即座にゲーム終了
-    if (isKing(targetPiece.type)) {
+    if (isKing(destPiece.type)) {
       newGameState.isGameOver = true;
       newGameState.currentPlayer = piece.player; // 取った側の勝ち
       return newGameState;
     }
 
     // 取られた駒が成り駒の場合は元の駒に戻す
-    let capturedType = targetPiece.type;
-    if (targetPiece.promoted && UNPROMOTE_MAP[targetPiece.type]) {
-      capturedType = UNPROMOTE_MAP[targetPiece.type]!;
+    let capturedType = destPiece.type;
+    if (destPiece.promoted && UNPROMOTE_MAP[destPiece.type]) {
+      capturedType = UNPROMOTE_MAP[destPiece.type]!;
     }
 
     const capturedPieces = newGameState.capturedPieces[piece.player];
-    const existingPiece = capturedPieces.find((p: { type: PieceType }) => p.type === capturedType);
+    const existingPiece = capturedPieces.find(p => p.type === capturedType);
     if (existingPiece) {
       existingPiece.count++;
     } else {
@@ -441,9 +441,15 @@ export const movePiece = (
     }
   }
 
-  // 駒の移動
-  newGameState.board[to.y][to.x].piece = piece;
-  newGameState.board[from.y][from.x].piece = null;
+  // 駒の移動（ディープコピーを作成）
+  newGameState.board[to.y][to.x] = {
+    position: { x: to.x, y: to.y },
+    piece: { ...piece }
+  };
+  newGameState.board[from.y][from.x] = {
+    position: { x: from.x, y: from.y },
+    piece: null
+  };
 
   // プレイヤーの交代
   newGameState.currentPlayer = newGameState.currentPlayer === '先手' ? '後手' : '先手';
