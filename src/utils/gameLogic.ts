@@ -1,4 +1,4 @@
-import { GameState, Piece, Position, PieceType, Player, CapturedPiece, PromotionMap, Square } from '../types/shogi';
+import { GameState, Piece, Position, PieceType, Player, PromotionMap } from '../types/shogi';
 
 type PieceMovement = {
   x: number;
@@ -442,9 +442,10 @@ export const movePiece = (
   }
 
   // 駒の移動（ディープコピーを作成）
+  const movedPiece = { ...piece };
   newGameState.board[to.y][to.x] = {
     position: { x: to.x, y: to.y },
-    piece: { ...piece }
+    piece: movedPiece
   };
   newGameState.board[from.y][from.x] = {
     position: { x: from.x, y: from.y },
@@ -528,7 +529,7 @@ export const dropPiece = (
   
   // 持ち駒から1枚減らす
   const capturedPieces = newGameState.capturedPieces[player];
-  const pieceIndex = capturedPieces.findIndex((p: { type: PieceType }) => p.type === pieceType);
+  const pieceIndex = capturedPieces.findIndex(p => p.type === pieceType);
   if (pieceIndex === -1 || capturedPieces[pieceIndex].count === 0) {
     return gameState;
   }
@@ -540,10 +541,15 @@ export const dropPiece = (
   }
 
   // 盤面に配置
-  newGameState.board[to.y][to.x].piece = {
+  const newPiece = {
     type: pieceType,
     player: player,
     promoted: false
+  };
+  
+  newGameState.board[to.y][to.x] = {
+    position: { x: to.x, y: to.y },
+    piece: newPiece
   };
 
   // プレイヤーの交代
