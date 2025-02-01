@@ -1,0 +1,59 @@
+.captured-pieces {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.captured-pieces h3 {
+  margin: 0 0 10px 0;
+  font-size: 1em;
+  color: #333;
+}
+
+.pieces-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.captured-piece {
+  position: relative;
+  padding: 5px 10px;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #ffd700;
+}
+
+.captured-piece:hover {
+  background-color: #ffe44d;
+}
+
+.piece-type {
+  font-weight: bold;
+}
+
+.piece-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4d4d;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.captured-pieces.後手 .captured-piece {
+  transform: rotate(180deg);
+}
+
+.captured-pieces.後手 .piece-count {
+  transform: rotate(-180deg);
+} 
