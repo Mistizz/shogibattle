@@ -316,11 +316,16 @@ const willBeInCheck = (
   const player = gameState.currentPlayer;
   const newGameState = JSON.parse(JSON.stringify(gameState));
   const piece = newGameState.board[from.y][from.x].piece;
-  const targetPiece = newGameState.board[to.y][to.x].piece;
 
   // 仮の移動を行う
-  newGameState.board[to.y][to.x].piece = piece;
-  newGameState.board[from.y][from.x].piece = null;
+  newGameState.board[to.y][to.x] = {
+    position: { x: to.x, y: to.y },
+    piece: piece
+  };
+  newGameState.board[from.y][from.x] = {
+    position: { x: from.x, y: from.y },
+    piece: null
+  };
 
   // 相手の全ての駒について、王手できるかチェック
   const kingPos = getKingPosition(newGameState, player);
@@ -448,17 +453,17 @@ export const movePiece = (
 
   // 駒の移動（ディープコピーを作成）
   const movedPiece = { ...piece };
-  const fromSquare: Square = {
-    position: { x: from.x, y: from.y },
-    piece: null
-  };
-  const toSquare: Square = {
+  const newToSquare: Square = {
     position: { x: to.x, y: to.y },
     piece: movedPiece
   };
+  const newFromSquare: Square = {
+    position: { x: from.x, y: from.y },
+    piece: null
+  };
 
-  newGameState.board[to.y][to.x] = toSquare;
-  newGameState.board[from.y][from.x] = fromSquare;
+  newGameState.board[to.y][to.x] = newToSquare;
+  newGameState.board[from.y][from.x] = newFromSquare;
 
   // プレイヤーの交代
   newGameState.currentPlayer = newGameState.currentPlayer === '先手' ? '後手' : '先手';
