@@ -139,7 +139,6 @@ export const canPromote = (
     return false;
   }
 
-  const promotionZone = piece.player === '先手' ? 3 : 6;
   return (piece.player === '先手' && (to.y < 3 || from.y < 3)) ||
          (piece.player === '後手' && (to.y > 5 || from.y > 5));
 };
@@ -426,7 +425,7 @@ export const movePiece = (
     }
 
     const capturedPieces = newGameState.capturedPieces[piece.player];
-    const existingPiece = capturedPieces.find((p: CapturedPiece) => p.type === capturedType);
+    const existingPiece = capturedPieces.find((p) => p.type === capturedType);
     if (existingPiece) {
       existingPiece.count++;
     } else {
@@ -444,7 +443,7 @@ export const movePiece = (
   }
 
   // 駒の移動
-  newGameState.board[to.y][to.x].piece = piece;
+  newGameState.board[to.y][to.x].piece = { ...piece };
   newGameState.board[from.y][from.x].piece = null;
 
   // プレイヤーの交代
@@ -467,7 +466,7 @@ export const canDropPiece = (
   player: Player
 ): boolean => {
   // 既に駒がある場所には配置不可
-  if (getPieceAt(gameState, to)) {
+  if (gameState.board[to.y][to.x].piece) {
     return false;
   }
 

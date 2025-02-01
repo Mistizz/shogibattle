@@ -1,4 +1,4 @@
-import { GameState, Position, Piece, PieceType } from '../types/shogi';
+import { GameState, Position, PieceType, Player } from '../types/shogi';
 import { getLegalMoves, movePiece, isCheck, dropPiece } from './gameLogic';
 
 // 駒の価値
